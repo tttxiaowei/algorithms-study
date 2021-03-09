@@ -56,68 +56,73 @@ var findMedianSortedArrays = function(nums1, nums2) {
 var findMedianSortedArrays2 = function(nums1, nums2) {
     let len1 = nums1.length;
     let len2 = nums2.length;
-    let k = (len1 + len2 + 2) >> 1;4
+    let k = (len1 + len2 + 2) >> 1;
     let l1 = 0;
     let r1 = len1 - 1;
     let l2 = 0;
     let r2 = len2 - 1;
-    let ll1 = ll2 = -1
+    let rr1 = rr2 = -1;
     while (k > 0) {
+        // console.log(l1, r1, l2, r2)
+        if (r1 >= len1 || l1 >= len1 || l1 > r1) {
+            if (rr1 === -1) {
+                rr1 = 0;
+            } else if (rr2 === -1) {
+                rr2 = 0;
+            }
+            rr2 = r2 = l2 + k;
+            if(rr2 >= len2 - 1) {
+                rr2 = len2 - 1
+            }
+            break
+        } else if (r2 >= len2 || l2 >= len2 || l2 > r2) {
+            if (rr1 === -1) {
+                rr1 = 0;
+            } else if (rr2 === -1) {
+                rr2 = 0;
+            }
+            rr1 = r1 = l1 + k;
+            if(rr1 >= len1 - 1) {
+                rr1 = len1 - 1
+            }
+            break
+        }
         let mid1 = (l1 + r1 + 1) >> 1;
         let mid2 = (l2 + r2 + 1) >> 1;
-        if (!nums1[mid1]) {
-            mid1 -= 1;
-        }
-        if (!nums2[mid2]) {
-            mid2 -= 1;
-        }
         if (nums1[mid1] >= nums2[mid2]) {
-            k = k - (mid2 - l2);
-            r1 = mid1;
-            l2 = mid2;
-            ll2 = mid2 - 1;
+            k -= (mid2 - l2 + 1);
+            rr2 = mid2;
+            r1 = mid1 - 1;
+            l2 = mid2 + 1;
         } else {
-            k = k - (mid1 - l1);
-            r2 = mid2;
-            l1 = mid1;
-            ll1 = mid1 - 1;
-        }
-
-        if (l1 === -1 || r1 === -1 || l1 === r1) {
-            ll2 += k;
-            if (k !== 0) {
-                ll2 -= 1
-            }
-            break;
-        }
-        if (l2 === -1 || r2 === -1 || l2 ===r2) {
-            ll1 += k;
-            if (k !== 0) {
-                ll1 -= 1
-            }
-            break;
+            k -= (mid1 - l1 + 1);
+            rr1 = mid1;
+            r2 = mid2 - 1;
+            l1 = mid1 + 1;
         }
     }
-
-    console.log(k, ll1, ll2)
+    console.log(k, rr1, rr2)
     if ((len1 + len2 ) % 2) { // 奇数
-        return Math.max(nums1[ll1] || 0, nums2[ll2] || 0);
+        return getMaxVal(nums1, rr1, nums2, rr2);
     } else {
-        let max1, max2;
-        if (ll1 === -1) {
-            return (nums2[ll2] + nums2[ll2 - 1]) / 2;
-        }
-        if (ll2 === -1) {
-            return (nums1[ll1] + nums1[ll1 - 1]) / 2;
-        }
-        if (nums1[ll1] > nums2[ll2]) {
-            max1 = nums1[ll1];
-            max2 = Math.max(nums1[ll1 - 1] || 0, nums2[ll2] || 0);
+        let max1 = max2 = 0;
+        max1 = getMaxVal(nums1, rr1, nums2, rr2);
+        if (max1 === nums1[rr1]) {
+            max2 = getMaxVal(nums1, rr1 - 1, nums2, rr2);
         } else {
-            max1 = nums2[ll2];
-            max2 = Math.max(nums2[ll2 - 1] || 0, nums1[ll1] || 0);
+            max2 = getMaxVal(nums1, rr1, nums2, rr2 - 1);
         }
         return (max1 + max2) / 2;
     }
+
+    function getMaxVal(arr1, index1, arr2, index2) {
+        if (index1 < 0 || index1 >= arr1.length) {
+            return arr2[index2];
+        } else if (index2 < 0 || index2 >= arr2.length) {
+            return arr1[index1];
+        } else {
+            return Math.max(arr1[index1], arr2[index2]);
+        }
+    }
 }
-console.log(findMedianSortedArrays2([1,2], [3,4]))
+console.log(findMedianSortedArrays2([1,5], [2, 6]))
