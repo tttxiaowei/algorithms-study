@@ -62,46 +62,25 @@ var findMedianSortedArrays2 = function(nums1, nums2) {
     let l2 = 0;
     let r2 = len2 - 1;
     let rr1 = rr2 = -1;
-    while (k > 0) {
-        // console.log(l1, r1, l2, r2)
-        if (r1 >= len1 || l1 >= len1 || l1 > r1) {
-            if (rr1 === -1) {
-                rr1 = 0;
-            } else if (rr2 === -1) {
-                rr2 = 0;
+    if (!len1) {
+        rr2 = k - 1;
+    } else if (!len2) {
+        rr1 = k - 1;
+    } else {
+        while (k > 0) {
+            console.log(k, r1, r2);
+            let index = (k >> 1) - 1;
+            r1 = rr1 === -1 ? index : rr1 + index 
+            r2 = rr1 === -1 ? index : rr2 + index 
+            if (nums1[r1] < nums2[r2]) {
+                rr1 = r1
+            } else {
+                rr2 = r2
             }
-            rr2 = r2 = l2 + k;
-            if(rr2 >= len2 - 1) {
-                rr2 = len2 - 1
-            }
-            break
-        } else if (r2 >= len2 || l2 >= len2 || l2 > r2) {
-            if (rr1 === -1) {
-                rr1 = 0;
-            } else if (rr2 === -1) {
-                rr2 = 0;
-            }
-            rr1 = r1 = l1 + k;
-            if(rr1 >= len1 - 1) {
-                rr1 = len1 - 1
-            }
-            break
-        }
-        let mid1 = (l1 + r1 + 1) >> 1;
-        let mid2 = (l2 + r2 + 1) >> 1;
-        if (nums1[mid1] >= nums2[mid2]) {
-            k -= (mid2 - l2 + 1);
-            rr2 = mid2;
-            r1 = mid1 - 1;
-            l2 = mid2 + 1;
-        } else {
-            k -= (mid1 - l1 + 1);
-            rr1 = mid1;
-            r2 = mid2 - 1;
-            l1 = mid1 + 1;
+            k -= (index + 1)
         }
     }
-    console.log(k, rr1, rr2)
+    console.log('result:', rr1, rr2)
     if ((len1 + len2 ) % 2) { // 奇数
         return getMaxVal(nums1, rr1, nums2, rr2);
     } else {
@@ -125,4 +104,4 @@ var findMedianSortedArrays2 = function(nums1, nums2) {
         }
     }
 }
-console.log(findMedianSortedArrays2([1,5], [2, 6]))
+console.log(findMedianSortedArrays2([1], [1]))
