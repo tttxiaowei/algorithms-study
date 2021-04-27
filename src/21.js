@@ -1,55 +1,90 @@
 /*
-力扣序号287.寻找重复数
-https://leetcode-cn.com/problems/find-the-duplicate-number/
-给定一个包含 n + 1 个整数的数组 nums ，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。
+力扣序号2. 两数相加
+https://leetcode-cn.com/problems/add-two-numbers/
+给你两个 非空 的链表，表示两个非负的整数。它们每位数字都是按照 逆序 的方式存储的，并且每个节点只能存储 一位 数字。
 
-假设 nums 只有 一个重复的整数 ，找出 这个重复的数 。
+请你将两个数相加，并以相同形式返回一个表示和的链表。
 
+你可以假设除了数字 0 之外，这两个数都不会以 0 开头。
 示例 1：
-输入：nums = [1,3,4,2,2]
-输出：2
 
+
+输入：l1 = [2,4,3], l2 = [5,6,4]
+输出：[7,0,8]
+解释：342 + 465 = 807.
 示例 2：
-输入：nums = [3,1,3,4,2]
-输出：3
 
+输入：l1 = [0], l2 = [0]
+输出：[0]
 示例 3：
-输入：nums = [1,1]
-输出：1
 
-示例 4：
-输入：nums = [1,1,2]
-输出：1
- 
+输入：l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
+输出：[8,9,9,9,0,0,0,1]
 
-提示：
-2 <= n <= 3 * 104
-nums.length == n + 1
-1 <= nums[i] <= n
-nums 中 只有一个整数 出现 两次或多次 ，其余整数均只出现 一次
-
-进阶：
-如何证明 nums 中至少存在一个重复的数字?
-你可以在不修改数组 nums 的情况下解决这个问题吗？
-你可以只用常量级 O(1) 的额外空间解决这个问题吗？
-你可以设计一个时间复杂度小于 O(n2) 的解决方案吗？
-
+每个链表中的节点数在范围 [1, 100] 内
+0 <= Node.val <= 9
+题目数据保证列表表示的数字不含前导零
 */
+
+function ListNode(val, next) {
+    this.val = (val===undefined ? 0 : val)
+    this.next = (next===undefined ? null : next)
+}
+
+function generateList(list) {
+    let arr = list.map(item => new ListNode(item))
+    arr.forEach((item, index) => {
+        item.next = arr[index + 1] || null
+    })
+    return arr[0]
+}
+
 /**
- * @param {number[]} nums
- * @return {number}
+ * @param {ListNode} l1
+ * @param {ListNode} l2
+ * @return {ListNode}
  */
-var findDuplicate = function(nums) {
-    let l = 1
-    let r = nums.length - 1
-    while(l < r) {
-        let mid = (l + r) >> 1
-        if (nums.filter(item => item <= mid).length > mid) {
-            r = mid
+var addTwoNumbers = function(l1, l2) {
+    const list = []
+    let plus = 0
+    while(l1 && l2) {
+        let val = l1.val + l2.val + plus
+        plus = 0
+        if (val < 10) {
+            list.push(val)
         } else {
-            l = mid + 1
+            plus = 1
+            list.push(val - 10)
         }
+        l1 = l1.next
+        l2 = l2.next
     }
-    return l
-};
-console.log(findDuplicate([3,1,3,4,2]))
+    while(l1) {
+        let val = l1.val + plus
+        plus = 0
+        if (val < 10) {
+            list.push(val)
+        } else {
+            plus = 1
+            list.push(val - 10)
+        }
+        l1 = l1.next
+    }
+    
+    while(l2) {
+        let val = l2.val + plus
+        plus = 0
+        if (val < 10) {
+            list.push(val)
+        } else {
+            plus = 1
+            list.push(val - 10)
+        }
+        l2 = l2.next
+    }
+    if (plus) {
+        list.push(plus)
+    }
+    return generateList(list)
+}
+console.log(JSON.stringify(addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))))
