@@ -103,7 +103,7 @@ var isMatch = function(s, p) {
 
 
 /**
- * 递归
+ * 动态规划 TODO
  * @param {string} s
  * @param {string} p
  * @return {boolean}
@@ -112,12 +112,50 @@ var isMatch1 = function(s, p) {
     if (!p && !s) {
         return true
     }
-  
-    const len = p.length
-    let pos = 0
-    let c = s[pos]
-    let i = 0
-  
+    // const p1 = p.split('')
+    // for (let i = 0; i < p1.length;) {
+    //     if (p1[i] === '*') {
+    //         p1.splice(i - 1, 2, p1[i - 1] + '*')
+    //         continue
+    //     }
+    //     i++
+    // }
+    // s = ' ' + s
+    // p1.unshift(' ')
+    // let m = s.length
+    // let n = p1.length
+    // const dp = []
+    // for (let i = 0; i < m; i++) {
+    //     dp[i] = []
+    //     for (let j = 0; j < n; j++) {
+    //         if (i === 0 || j === 0) {
+    //             if (i === 0 && j === 0) {
+    //                 dp[0][0] = true
+    //             } else {
+    //                 dp[i][j] = p1[j].length == 2
+    //             }
+    //         } else if (p1[j].length === 2) { // 带*
+    //              if (matchs(s[i], p1[j])) {
+    //                  dp[i][j] = dp[i][j - 1] || dp[i - 1][j]
+    //              } else {
+    //                  dp[i][j] = dp[i][j - 1]
+    //              }
+    //         } else { // 不带*
+    //             if (matchs(s[i], p1[j])) {
+    //                 dp[i][j] = dp[i - 1][j - 1]
+    //             } else {
+    //                 dp[i][j] = false
+    //             }
+    //         }
+    //     }
+    // }
+
+    // function matchs(s, p) {
+    //     const c = p.length === 2 ? p[0] : p
+    //     return s === c || c === '.'
+    // }
+    // return dp[m - 1][n - 1]
 };
 
-console.log(isMatch1('ab', '.*'))
+
+console.log(isMatch1('a', 'ab*a'))
