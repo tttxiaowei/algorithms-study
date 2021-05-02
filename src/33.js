@@ -31,28 +31,37 @@ var threeSum = function(nums) {
     }
     const result = []
     nums = nums.sort((a, b) => (a - b))
-    console.log(nums)
     for (let i = 0; i < len; i++) {
         if (nums[i] > 0) {
             break
         }
-        let l = i + 1
-        let r = len - 1
-        while(l < r) {
-            let sum = nums[i] + nums[l] + nums[r]
-            if (!sum) {
-                result.push([i, l, r])
-            } else if (sum < 0) {
-                r++
-            } else {
-                l--
+        if (nums[i] === nums[i - 1]) {
+            continue
+        }
+        let left = i + 1
+        let right = len - 1
+        while(left < right) {
+            let leftVal= nums[left]
+            let rightVal= nums[right]
+            let sum = nums[i] + leftVal + rightVal
+            if (!sum) { // 和为0
+                result.push([nums[i], leftVal, rightVal])
+            } 
+            if (sum <= 0) {
+                left++
+                while (leftVal === nums[left] && left < right) {
+                    left++
+                }
+            }
+            if (sum >= 0) {
+                right--
+                while (rightVal === nums[right] && left < right) {
+                    right--
+                }
             }
         }
-        
-
-        
     }
     return result
 };
 
-console.log(threeSum([-1,0,1,2,-1,-4]))
+console.log(JSON.stringify(threeSum([-1,0,1,2,-1,-4])))
