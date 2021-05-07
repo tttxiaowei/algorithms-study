@@ -1,161 +1,57 @@
-/*
-力扣序号10. 正则表达式匹配
-https://leetcode-cn.com/problems/regular-expression-matching/
-给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
+/**
+力扣序号27
+https://leetcode-cn.com/problems/remove-element/
 
-'.' 匹配任意单个字符
-'*' 匹配零个或多个前面的那一个元素
-所谓匹配，是要涵盖 整个 字符串 s的，而不是部分字符串。
- 
+给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
+元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+
 示例 1：
-输入：s = "aa" p = "a"
-输出：false
-解释："a" 无法匹配 "aa" 整个字符串。
+输入：nums = [3,2,2,3], val = 3
+输出：2, nums = [2,2]
+解释：函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。你不需要考虑数组中超出新长度后面的元素。例如，函数返回的新长度为 2 ，而 nums = [2,2,3,3] 或 nums = [2,2,0,0]，也会被视作正确答案。
 
-示例 2:
-输入：s = "aa" p = "a*"
-输出：true
-解释：因为 '*' 代表可以匹配零个或多个前面的那一个元素, 在这里前面的元素就是 'a'。因此，字符串 "aa" 可被视为 'a' 重复了一次。
+示例 2：
+输入：nums = [0,1,2,2,3,0,4,2], val = 2
+输出：5, nums = [0,1,4,0,3]
+解释：函数应该返回新的长度 5, 并且 nums 中的前五个元素为 0, 1, 3, 0, 4。注意这五个元素可为任意顺序。你不需要考虑数组中超出新长度后面的元素。
 
-示例 3：
-输入：s = "ab" p = ".*"
-输出：true
-解释：".*" 表示可匹配零个或多个（'*'）任意字符（'.'）。
-
-示例 4：
-输入：s = "aab" p = "c*a*b"
-输出：true
-解释：因为 '*' 表示零个或多个，这里 'c' 为 0 个, 'a' 被重复一次。因此可以匹配字符串 "aab"。
-
-示例 5：
-输入：s = "mississippi" p = "mis*is*p*."
-输出：false
-
-提示：
-0 <= s.length <= 20
-0 <= p.length <= 30
-s 可能为空，且只包含从 a-z 的小写字母。
-p 可能为空，且只包含从 a-z 的小写字母，以及字符 . 和 *。
-保证每次出现字符 * 时，前面都匹配到有效的字符
-
-*/
-/**
- * 递归
- * @param {string} s
- * @param {string} p
- * @return {boolean}
  */
-var isMatch = function(s, p) {
-    if (!p && !s) {
-        return true
-    }
-  
-    const len = p.length
-    let pos = 0
-    let c = s[pos]
-    let i = 0
-    for (; i < len;) { // 遍历p
-        if (!c) {
-            break
-        }
-        let curr = p[i]
-        let next = p[i + 1]
-        if (!next) { // 遍历到最后一个p的字符
-            if  (c === curr || curr === '.') {
-                pos++
-                i++
-            } else {
-                return false
-            }
-        } else if (next === '*') { // 下一个字符为*
-            while(c === curr || curr === '.') {
-                if (isMatch(s.slice(pos), p.slice(i + 2))) {
-                    return true
-                }
-                pos++
-                c = s[pos]
-                if (!c) {
-                    break
-                }
-            }
-            i += 2
-        } else { // 下一个字符为普通字符
-            if (curr === '.' || c === curr) {
-                pos++
-                c = s[pos]
-                if (!c) {
-                    i++  
-                    break
-                }
-            } else {
-                return false
-            }
-            i++     
-        }
-    }
-    if (i !== len) {
-        if (/^(\S\*)*$/.test(p.slice(i))) {
-            i = len
-        }
-    }
-    return pos === s.length && i === len
-};
-
 
 /**
- * 动态规划 TODO
- * @param {string} s
- * @param {string} p
- * @return {boolean}
+ * 双指针法
+ * @param {number[]} nums
+ * @param {number} val
+ * @return {number}
  */
-var isMatch1 = function(s, p) {
-    if (!p && !s) {
-        return true
+var removeElement1 = function(nums, val) {
+    const len = nums.length;
+    let i = 0;
+    for(let j = 0; j < len; j++) {
+        if (nums[j] !== val) {
+            nums[i] = nums[j];
+            i++;
+        }
     }
-    // const p1 = p.split('')
-    // for (let i = 0; i < p1.length;) {
-    //     if (p1[i] === '*') {
-    //         p1.splice(i - 1, 2, p1[i - 1] + '*')
-    //         continue
-    //     }
-    //     i++
-    // }
-    // s = ' ' + s
-    // p1.unshift(' ')
-    // let m = s.length
-    // let n = p1.length
-    // const dp = []
-    // for (let i = 0; i < m; i++) {
-    //     dp[i] = []
-    //     for (let j = 0; j < n; j++) {
-    //         if (i === 0 || j === 0) {
-    //             if (i === 0 && j === 0) {
-    //                 dp[0][0] = true
-    //             } else {
-    //                 dp[i][j] = p1[j].length == 2
-    //             }
-    //         } else if (p1[j].length === 2) { // 带*
-    //              if (matchs(s[i], p1[j])) {
-    //                  dp[i][j] = dp[i][j - 1] || dp[i - 1][j]
-    //              } else {
-    //                  dp[i][j] = dp[i][j - 1]
-    //              }
-    //         } else { // 不带*
-    //             if (matchs(s[i], p1[j])) {
-    //                 dp[i][j] = dp[i - 1][j - 1]
-    //             } else {
-    //                 dp[i][j] = false
-    //             }
-    //         }
-    //     }
-    // }
-
-    // function matchs(s, p) {
-    //     const c = p.length === 2 ? p[0] : p
-    //     return s === c || c === '.'
-    // }
-    // return dp[m - 1][n - 1]
+    return i++;
 };
 
-
-console.log(isMatch1('a', 'ab*a'))
+/**
+ * 不用双指针法，将当前元素与最后一个元素互换
+ * @param {number[]} nums
+ * @param {number} val
+ * @return {number}
+ */
+var removeElement1 = function(nums, val) {
+    let len = nums.length;
+    let j = 0;
+    for(; j < len;) {
+        if (nums[j] === val) {
+            nums[j] = nums[--len];
+        } else {
+            j++;
+        }
+    }
+    return j;
+};
+console.log(removeElement1([0,1,2,2,3,0,4,2], 2));

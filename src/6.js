@@ -1,114 +1,115 @@
-/**
-力扣序号21
-https://leetcode-cn.com/problems/merge-two-sorted-lists/
+/*
+力扣序号6. Z 字形变换
+https://leetcode-cn.com/problems/zigzag-conversion/
+将一个给定字符串 s 根据给定的行数 numRows ，以从上往下、从左到右进行 Z 字形排列。
 
-将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+比如输入字符串为 "PAYPALISHIRING" 行数为 3 时，排列如下：
+P   A   H   N
+A P L S I I G
+Y   I   R
+之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如："PAHNAPLSIIGYIR"。
+请你实现这个将字符串进行指定行数变换的函数：
 
 示例 1：
-输入：l1 = [1,2,4], l2 = [1,3,4]
-输出：[1,1,2,3,4,4]
+输入：s = "PAYPALISHIRING", numRows = 3
+输出："PAHNAPLSIIGYIR" 
 
 示例 2：
-输入：l1 = [], l2 = []
-输出：[]
+输入：s = "PAYPALISHIRING", numRows = 4
+输出："PINALSIGYAHRPI"
+解释：
+P     I    N
+A   L S  I G
+Y A   H R
+P     I
 
 示例 3：
-输入：l1 = [], l2 = [0]
-输出：[0]
+输入：s = "A", numRows = 1
+输出："A"
+ 
+提示：
+1 <= s.length <= 1000
+s 由英文字母（小写和大写）、',' 和 '.' 组成
+1 <= numRows <= 1000
 
- */
-
-
+*/
 /**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
+ * 
+ * 二维数组画z字
+ * @param {string} s
+ * @param {number} numRows
+ * @return {string}
  */
-/**
- * 迭代做法
- * @param {ListNode} l1
- * @param {ListNode} l2
- * @return {ListNode}
- */
-var mergeTwoLists1 = function(l1, l2) {
-    if (!l1) {
-        return l2;
+var convert = function(s, numRows) {
+    if (numRows === 1) {
+        return s
     }
-    if (!l2) {
-        return l1;
-    }
-    let result, last;
-    if (l1.val < l2.val) {
-        result = last = l1;
-        l1 = l1.next;
-    } else {
-        result = last = l2;
-        l2 = l2.next;
-    }
-    while(l1 && l2) {
-        if (l1.val < l2.val) {
-            last.next = l1;
-            last = l1;
-            l1 = l1.next;
+    const len = s.length
+    let x = y = 0
+    let asc = true
+    const maxY = numRows - 1
+    const arr = new Array()
+    for(let i = 0; i < len; i++) {
+        if (!arr[y]) {
+            arr[y] = []
+        }
+        arr[y][x] = s[i]
+        if (asc) {
+            if (y < maxY) {
+                y++
+            } else {
+                y--
+                x++
+                asc = false
+            }
         } else {
-            last.next = l2;
-            last = l2;
-            l2 = l2.next;
+            x++
+            if (y > 0) {
+                y--
+            } else {
+                y++
+                asc = true
+            }
         }
     }
-    if (l1) {
-        last.next = l1;
-    }
-    if (l2) {
-        last.next = l2;
-    }
-    return result;
+    return arr.reduce((str, item) => {
+        return str + item.join('') 
+    }, '')
 };
-
-
 /**
- * 递归做法
- * @param {ListNode} l1
- * @param {ListNode} l2
- * @return {ListNode}
+ * 
+ * 一维数组
+ * @param {string} s
+ * @param {number} numRows
+ * @return {string}
  */
-var mergeTwoLists2 = function(l1, l2) {
-    if (!l1) {
-        return l2;
-    } else if (!l2) {
-        return l1;
-    } else if (l1.val < l2.val) {
-        l1.next = mergeTwoLists2(l1.next, l2);
-        return l1;
-    } else {
-        l2.next = mergeTwoLists2(l1, l2.next);
-        return l2;
+var convert1 = function(s, numRows) {
+    if (numRows === 1) {
+        return s
     }
+    const len = s.length
+    let down = true
+    let row = 0
+    const maxRow = numRows - 1
+    const arr = new Array(numRows).fill('')
+    for(let i = 0; i < len; i++) {
+        arr[row] += s[i]
+        if (down) {
+            if (row === maxRow) {
+                row--
+                down = false
+            } else {
+                row++
+            }
+        } else {
+            if (row === 0) {
+                down = true
+                row++
+            } else {
+                row--
+            }
+        }
+    }
+    return arr.join('')
 };
-
-function ListNode(val, next) {
-    this.val = (val===undefined ? 0 : val)
-    this.next = (next===undefined ? null : next)
-}
-
-let l11 = new ListNode(19);
-let l12 = new ListNode(9, l11);
-let l13 = new ListNode(7, l12);
-let l14 = new ListNode(6, l13);
-let l15 = new ListNode(3, l14);
-let l16 = new ListNode(1, l15);
-
-let l21 = new ListNode(21);
-let l22 = new ListNode(12, l21);
-let l23 = new ListNode(10, l22);
-let l24 = new ListNode(8, l23);
-let l25 = new ListNode(5, l24);
-let l26 = new ListNode(2, l25);
-
-let l3 = mergeTwoLists2(l16, l26);
-while(l3) {
-    console.log(l3.val);
-    l3 = l3.next;
-}
+console.log(convert1('PAYPALISHIRING', 3))

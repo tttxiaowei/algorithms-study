@@ -1,55 +1,73 @@
-/*
-力扣序号287.寻找重复数
-https://leetcode-cn.com/problems/find-the-duplicate-number/
-给定一个包含 n + 1 个整数的数组 nums ，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。
 
-假设 nums 只有 一个重复的整数 ，找出 这个重复的数 。
+/*
+力扣序号22. 括号生成
+https://leetcode-cn.com/problems/generate-parentheses/
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
 
 示例 1：
-输入：nums = [1,3,4,2,2]
-输出：2
+输入：n = 3
+输出：["((()))","(()())","(())()","()(())","()()()"]
 
 示例 2：
-输入：nums = [3,1,3,4,2]
-输出：3
-
-示例 3：
-输入：nums = [1,1]
-输出：1
-
-示例 4：
-输入：nums = [1,1,2]
-输出：1
+输入：n = 1
+输出：["()"]
  
-
 提示：
-2 <= n <= 3 * 104
-nums.length == n + 1
-1 <= nums[i] <= n
-nums 中 只有一个整数 出现 两次或多次 ，其余整数均只出现 一次
-
-进阶：
-如何证明 nums 中至少存在一个重复的数字?
-你可以在不修改数组 nums 的情况下解决这个问题吗？
-你可以只用常量级 O(1) 的额外空间解决这个问题吗？
-你可以设计一个时间复杂度小于 O(n2) 的解决方案吗？
+1 <= n <= 8
 
 */
+
+
 /**
- * @param {number[]} nums
- * @return {number}
+ * 从左括号开始加字符, 左括号的个数一定要大于等于右括号, 最终就是符合规则的字符串
+ * 循环
+ * @param {number} n
+ * @return {string[]}
  */
-var findDuplicate = function(nums) {
-    let l = 1
-    let r = nums.length - 1
-    while(l < r) {
-        let mid = (l + r) >> 1
-        if (nums.filter(item => item <= mid).length > mid) {
-            r = mid
-        } else {
-            l = mid + 1
+var generateParenthesis = function(n) {
+    let result = [{
+        val: '(',
+        l: 1,
+        r: 0
+    }]
+    for (let i = 1; i < n * 2; i++){
+        let tmp = []
+        result.forEach(item => {
+            if (item.l < n) {
+                tmp.push({
+                    val: item.val + '(',
+                    l: item.l + 1,
+                    r: item.r
+                })
+            }
+            if (item.l > item.r && item.r < n) { // 可以用(或)
+                tmp.push({
+                    val: item.val + ')',
+                    l: item.l,
+                    r: item.r + 1
+                })
+            }
+        })
+        result = tmp
+    }
+    return result.map(item => item.val)
+};
+// 递归 更快更省内存
+var generateParenthesis1 = function(n) {
+    let result = []
+    getParenthesis('', n, n)
+    function getParenthesis(str, l, r) {
+        if (!l && !r) {
+            return result.push(str)
+        }
+        if (l) {
+            getParenthesis(str + '(', l - 1, r)
+        }
+        if (l < r && r) {
+            getParenthesis(str + ')', l, r - 1)
         }
     }
-    return l
+    return result
 };
-console.log(findDuplicate([3,1,3,4,2]))
+
+console.log(JSON.stringify(generateParenthesis1(14)))

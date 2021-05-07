@@ -1,62 +1,91 @@
 
 /*
-力扣序号31. 下一个排列
-https://leetcode-cn.com/problems/next-permutation/
-实现获取 下一个排列 的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
-如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
-必须 原地 修改，只允许使用额外常数空间。
+力扣序号39. 组合总和
+https://leetcode-cn.com/problems/combination-sum/
+给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+candidates 中的数字可以无限制重复被选取。
+说明：
+所有数字（包括 target）都是正整数。
+解集不能包含重复的组合。 
 
-示例 1：
-输入：nums = [1,2,3]
-输出：[1,3,2]
+示例 1：
+输入：candidates = [2,3,6,7], target = 7,
+所求解集为：
+[
+  [7],
+  [2,2,3]
+]
 
-示例 2：
-输入：nums = [3,2,1]
-输出：[1,2,3]
-
-示例 3：
-输入：nums = [1,1,5]
-输出：[1,5,1]
-
-示例 4：
-输入：nums = [1]
-输出：[1]
-
+示例 2：
+输入：candidates = [2,3,5], target = 8,
+所求解集为：
+[
+  [2,2,2,2],
+  [2,3,3],
+  [3,5]
+]
+ 
 提示：
-1 <= nums.length <= 100
-0 <= nums[i] <= 100
+1 <= candidates.length <= 30
+1 <= candidates[i] <= 200
+candidate 中的每个元素都是独一无二的。
+1 <= target <= 500
 */
 
 /**
- * @param {number[]} nums
- * @return {void} Do not return anything, modify nums in-place instead.
+ * 递归
+ * @param {number[]} candidates
+ * @param {number} target
+ * @return {number[][]}
  */
-var nextPermutation = function(nums) {
-    let index = nums.length - 1
-    while (index) {
-        if (nums[index] > nums[index - 1]) { // 找到后一位（index）大于前一位（index-1）的位置
-            let neighbor, neighborIndex
-            nums.slice(index).forEach((item, i) => { // 找到index到末尾中，大于且最接近index-1的值
-                if (nums[index - 1] < item) {
-                    if (neighbor == null || item < neighbor) {
-                        neighbor = item
-                        neighborIndex = i
-                    } 
-                }
-            });
-            ([nums[index - 1], nums[index + neighborIndex]] = [nums[index + neighborIndex], nums[index - 1]]) // 让index-1的变大
-            nums.splice(index, nums.length, ...nums.slice(index).sort((a, b) => (a - b))) // 对index到末尾进行排序
-            break
+var combinationSum = function(candidates, target) {
+    let len = candidates.length
+    if (!len) {
+        return []
+    }
+    let res = []
+    for (let i = 0; i < len; i++) {
+        let currVal = candidates[i]
+        if (currVal === target) {
+            res.push([currVal])
+        } else if (currVal < target) {
+            let n = 1
+            while (n * currVal < target) {
+                combinationSum(candidates.slice(i + 1), target - n * currVal).forEach(item => {
+                    res.push(new Array(n).fill(currVal).concat(item))
+                })
+                n++
+            }
+            if (n * currVal === target) {
+                res.push(new Array(n).fill(currVal))
+            }
         }
-        index--
     }
-    if (!index) {
-        nums.splice(0, nums.length, ...nums.sort((a, b) => (a - b)))
-    }
-    return nums
+    return res
 };
 
-console.log(JSON.stringify(nextPermutation([5,4,7,5,3,2])))
-console.log(JSON.stringify(nextPermutation([1,2,3])))
-console.log(JSON.stringify(nextPermutation([1,3,2])))
-console.log(JSON.stringify(nextPermutation([2,3,1])))
+/**
+ * 回溯
+ * @param {number[]} candidates
+ * @param {number} target
+ * @return {number[][]}
+ */
+var combinationSum1 = function(candidates, target) {
+    const ans = [];
+    const len = candidates.length
+    const dfs = (target, combine, idx) => {
+        for (let i = idx; i < len; i++) {
+            let currVal = candidates[i]
+            if (target === currVal) {
+                ans.push([...combine, currVal])
+            } else if (target > currVal) {
+                // console.log('递归之前：', JSON.stringify([...combine, currVal]), '剩余：', target - currVal)
+                dfs(target - currVal, [...combine, currVal], i)
+                // console.log('递归之后：', JSON.stringify([...combine, currVal]), '剩余：', target - currVal)
+            }
+        }
+    }
+    dfs(target, [], 0);
+    return ans;
+};
+console.log(JSON.stringify(combinationSum1([2, 3, 6, 7], 7)))

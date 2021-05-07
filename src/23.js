@@ -1,52 +1,88 @@
+
 /*
-力扣序号3. 无重复字符的最长子串
-https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
-给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
+力扣序号23. 合并K个升序链表
+https://leetcode-cn.com/problems/merge-k-sorted-lists/
+给你一个链表数组，每个链表都已经按升序排列。
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
 
-示例 1:
-输入: s = "abcabcbb"
-输出: 3 
-解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+示例 1：
+输入：lists = [[1,4,5],[1,3,4],[2,6]]
+输出：[1,1,2,3,4,4,5,6]
+解释：链表数组如下：
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+将它们合并到一个有序链表中得到。
+1->1->2->3->4->4->5->6
 
-示例 2:
-输入: s = "bbbbb"
-输出: 1
-解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+示例 2：
+输入：lists = []
+输出：[]
 
-示例 3:
-输入: s = "pwwkew"
-输出: 3
-解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
-     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+示例 3：
+输入：lists = [[]]
+输出：[] 
 
-示例 4:
-输入: s = ""
-输出: 0
- 
 提示：
-0 <= s.length <= 5 * 104
-s 由英文字母、数字、符号和空格组成
+k == lists.length
+0 <= k <= 10^4
+0 <= lists[i].length <= 500
+-10^4 <= lists[i][j] <= 10^4
+lists[i] 按 升序 排列
+lists[i].length 的总和不超过 10^4
+
 */
 
-/**
- * 双指针法
- * @param {string} s
- * @return {number}
- */
-var lengthOfLongestSubstring = function(s) {
-    let len = s.length
-    let maxLen = 0
-    let start = 0
-    let end = 1
-    while (end <= len) {
-        let sub = s.slice(start, end)
-        let pos = sub.indexOf(s[end])
-        if (pos > -1 || end === len) {
-            maxLen = maxLen > sub.length ? maxLen : sub.length
-            start += pos + 1
-        }
-        end++
+function ListNode(val, next) {
+    this.val = (val===undefined ? 0 : val)
+    this.next = (next===undefined ? null : next)
+}
+
+function generateList(list) {
+    let last = null
+    for (let i = list.length - 1; i >= 0; i--) {
+        last = new ListNode(list[i], last)
     }
-    return maxLen
+    return last
+}
+
+/**
+ * @param {ListNode[]} lists
+ * @return {ListNode}
+ */
+var mergeKLists = function(lists) {
+    lists = lists.filter(item => item)
+    let len = lists.length
+    if (!len) {
+        return null
+    }
+    let head, lasNode
+    while (lists.length) {
+        let len = lists.length
+        let minNodeIndex = len - 1
+        let minNode = lists[minNodeIndex]
+        for (let i = minNodeIndex - 1; i > -1; i--) {
+            let currNode = lists[i]
+            if (currNode.val < minNode.val) {
+                minNode = currNode
+                minNodeIndex = i
+            }
+        }
+        if (!head) {
+            head = lasNode = minNode
+        } else {
+            lasNode.next = minNode
+            lasNode = minNode
+        }
+        if (!minNode.next) {
+            lists.splice(minNodeIndex, 1)
+        } else {
+            lists[minNodeIndex] = minNode.next
+        }
+    }
+    return head
 };
-console.log(lengthOfLongestSubstring('abc'))
+
+console.log(JSON.stringify(mergeKLists([generateList([])])))

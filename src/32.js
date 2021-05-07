@@ -1,42 +1,121 @@
-/*
-力扣序号72. 编辑距离
-https://leetcode-cn.com/problems/edit-distance/
-给你两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。
-你可以对一个单词进行如下三种操作：
-插入一个字符
-删除一个字符
-替换一个字符
- 
-示例 1：
-输入：word1 = "horse", word2 = "ros"
-输出：3
-解释：
-horse -> rorse (将 'h' 替换为 'r')
-rorse -> rose (删除 'r')
-rose -> ros (删除 'e')
 
-示例 2：
-输入：word1 = "intention", word2 = "execution"
-输出：5
-解释：
-intention -> inention (删除 't')
-inention -> enention (将 'i' 替换为 'e')
-enention -> exention (将 'n' 替换为 'x')
-exention -> exection (将 'n' 替换为 'c')
-exection -> execution (插入 'u')
+/*
+力扣序号32. 最长有效括号
+https://leetcode-cn.com/problems/longest-valid-parentheses/
+给你一个只包含 '(' 和 ')' 的字符串，找出最长有效（格式正确且连续）括号子串的长度。
+
+示例 1：
+输入：s = "(()"
+输出：2
+解释：最长有效括号子串是 "()"
+
+示例 2：
+输入：s = ")()())"
+输出：4
+解释：最长有效括号子串是 "()()"
+
+示例 3：
+输入：s = ""
+输出：0
  
 提示：
-0 <= word1.length, word2.length <= 500
-word1 和 word2 由小写英文字母组成
+0 <= s.length <= 3 * 104
+s[i] 为 '(' 或 ')'
 */
+
 /**
- * 动态规划 TODO
- * @param {string} word1
- * @param {string} word2
+ * 动态规划
+ * @param {string} s
  * @return {number}
  */
-var minDistance = function(word1, word2) {
-    
+var longestValidParentheses = function(s) {
+    if (!s) {
+        return 0
+    }
+    let len = s.length
+    let dp = new Array(len).fill(0)
+    for (let i = 1; i < len; i++) {
+        if (s[i] === ')') {
+           if (s[i - 1] === '(') {
+                dp[i] = (i >= 2 ? dp[i - 2] : 0) + 2
+           } else if (i - dp[i - 1] - 1 >= 0 && s[i - dp[i - 1] - 1] === '(') {
+                dp[i] = dp[i - 1] + (i - dp[i - 1] - 2 >= 0 ? dp[i - dp[i - 1] - 2] : 0) + 2
+           }
+        }
+    }
+    return dp.sort((a, b) => (b - a))[0]
 };
 
-console.log(minDistance('horse', 'ros'))
+/**
+ * 栈
+ * @param {string} s
+ * @return {number}
+ */
+var longestValidParentheses1 = function(s) {
+    if (!s) {
+        return 0
+    }
+    let len = s.length
+    let maxans = 0
+    let list = [-1]
+    for (let i = 0; i < len; i++) {
+        if (s[i] === '(') {
+            list.push(i)
+        } else {
+            list.pop()
+            if (!list.length) {
+                list.push(i)
+            } else {
+                maxans = Math.max(maxans, i - list[list.length - 1])
+            }
+        }
+    }
+    return maxans
+};
+
+/**
+ * 遍历
+ * @param {string} s
+ * @return {number}
+ */
+var longestValidParentheses2 = function(s) {
+    if (!s) {
+        return 0
+    }
+    let len = s.length
+    let maxans = left = right = 0
+    for (let i = 0; i < len; i++) {
+        if (s[i] === '(') {
+            left++
+        } else {
+            right++
+        }
+        if (left === right) {
+            maxans = Math.max(maxans, 2 * right)
+        } else if (right > left) {
+            left = right = 0
+        }
+    }
+    left = right = 0
+    for (let i = len - 1; i > -1; i--) {
+        if (s[i] === '(') {
+            left++
+        } else {
+            right++
+        }
+        if (left === right) {
+            maxans = Math.max(maxans, 2 * right)
+        } else if (right < left) {
+            left = right = 0
+        }
+    }
+
+    return maxans
+};
+
+console.log(JSON.stringify(longestValidParentheses2('(()'))) // 2
+console.log(JSON.stringify(longestValidParentheses2('(()(((()'))) // 2
+console.log(JSON.stringify(longestValidParentheses2(')()())'))) // 4
+console.log(JSON.stringify(longestValidParentheses2(')()())'))) // 4
+console.log(JSON.stringify(longestValidParentheses2('()(())'))) // 6
+console.log(JSON.stringify(longestValidParentheses2('(()()))'))) // 6

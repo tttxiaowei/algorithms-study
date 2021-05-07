@@ -1,77 +1,164 @@
-/*
-力扣序号12. 整数转罗马数字
-https://leetcode-cn.com/problems/integer-to-roman/
-罗马数字包含以下七种字符： I， V， X， L，C，D 和 M。
-
-字符          数值
-I             1
-V             5
-X             10
-L             50
-C             100
-D             500
-M             1000
-例如， 罗马数字 2 写做 II ，即为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做  XXVII, 即为 XX + V + II 。
-
-通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：
-
-I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
-X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。 
-C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
-给定一个整数，将其转为罗马数字。输入确保在 1 到 3999 的范围内。
-
- 示例 1:
-输入: 3
-输出: "III"
-
-示例 2:
-输入: 4
-输出: "IV"
-
-示例 3:
-输入: 9
-输出: "IX"
-
-示例 4:
-输入: 58
-输出: "LVIII"
-解释: L = 50, V = 5, III = 3.
-
-示例 5:
-输入: 1994
-输出: "MCMXCIV"
-解释: M = 1000, CM = 900, XC = 90, IV = 4.
-
-提示：
-1 <= num <= 3999
-*/
 /**
- * @param {number} num
- * @return {string}
+力扣序号34
+https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+ 
+给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
+如果数组中不存在目标值 target，返回 [-1, -1]。
+
+示例 1：
+输入：nums = [5,7,7,8,8,10], target = 8
+输出：[3,4]
+
+示例 2：
+输入：nums = [5,7,7,8,8,10], target = 6
+输出：[-1,-1]
+
+示例 3：
+输入：nums = [], target = 0
+输出：[-1,-1]
  */
-var intToRoman = function(num) {
-    let roman = []
-    num = String(num).split('').reverse()
-    const romanMap = [
-        ['I', 'V', 'X'],
-        ['X', 'L', 'C'],
-        ['C', 'D', 'M'],
-        ['M', null, null],
-    ]
-    
-    num.forEach((item, index) => {
-        let map = romanMap[index]
-        if (item == 9) {
-            roman.push(map[0] + map[2])
-        } else if (item == 4) {
-            roman.push(map[0] + map[1])
-        } else if (item >= 5) {
-            roman.push(map[1] + map[0].repeat(item - 5))
-        } else if (item < 4) {
-            roman.push(map[0].repeat(item))
+
+/**
+ * 二分法， 直接从mid忘前后找相同值
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var searchRange1 = function(nums, target) {
+    let left = 0;
+    let right = nums.length - 1;
+    let startPos, endPos;
+    while (left <= right) {
+        let mid = (left + right) >> 1;
+        if (nums[mid] === target) {
+            startPos = endPos = mid;
+            while (nums[startPos] === target) { // 直接从mid忘前后找相同值
+                startPos--;
+            }
+            while (nums[endPos] === target) {
+                endPos++;
+            }
+            return [startPos + 1, endPos - 1];
+        } else if (nums[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
         }
-    });
-    return roman.reverse().join('')
+    }
+    return [-1, -1];
 };
 
-console.log(intToRoman(1994))
+
+
+
+/**
+ * 二分法，分别找第一个和最后一个值
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var searchRange2 = function(nums, target) {
+    let len = nums.length;
+    if (!len) {
+        return [-1, -1];
+    }
+    let firstIndex = findFirstPosition(nums, target);
+    if (firstIndex === -1) {
+        return [-1, -1];
+    }
+    return [firstIndex, findLastPosition(nums, target)];
+};
+
+/**
+ * 二分法，找第一个值
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var findFirstPosition = function(nums, target) {
+    let left = 0;
+    let right = nums.length - 1;
+    while (left < right) {
+        console.log('first: ', String(nums.slice(left, right + 1)));
+        let mid = (left + right) >> 1;
+        if (nums[mid] === target) {
+            right = mid;
+        } else if (nums[mid] > target) {
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    if (nums[left] === target) {
+        return left;
+    }
+    return -1;
+}
+
+/**
+ * 二分法，找最后一个值
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var findLastPosition = function(nums, target) {
+    let left = 0;
+    let right = nums.length - 1;
+    while (left < right) {
+        console.log('last: ', String(nums.slice(left, right + 1)));
+        let mid = (left + right + 1) >> 1;
+        if (nums[mid] === target) {
+            left = mid;
+        } else if (nums[mid] > target) {
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    if (nums[left] === target) {
+        return left;
+    }
+    return -1;
+}
+
+
+
+
+/**
+ * 二分法， 官方推荐
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var searchRange3 = function(nums, target) {
+    let ans = [-1, -1];
+    const leftIdx = binarySearch(nums, target, true);
+    const rightIdx = binarySearch(nums, target, false) - 1;
+    if (leftIdx <= rightIdx && rightIdx < nums.length && nums[leftIdx] === target && nums[rightIdx] === target) {
+        ans = [leftIdx, rightIdx];
+    } 
+    return ans;
+};
+
+/**
+ * 二分法， 一个函数找到第一个和最后一个
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+const binarySearch = (nums, target, lower) => {
+    let left = 0, right = nums.length - 1, ans = nums.length;
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        if (nums[mid] > target || (lower && nums[mid] >= target)) {
+            right = mid - 1;
+            ans = mid;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return ans;
+}
+
+
+console.log(searchRange3([0,1,2,3,4,4,4,5], 4));

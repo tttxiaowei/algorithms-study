@@ -1,58 +1,61 @@
-/**
- 力扣序号852
- https://leetcode-cn.com/problems/find-in-mountain-array/
 
-符合下列属性的数组 arr 称为 山脉数组 ：
-arr.length >= 3
-存在 i（0 < i < arr.length - 1）使得：
-arr[0] < arr[1] < ... arr[i-1] < arr[i]
-arr[i] > arr[i+1] > ... > arr[arr.length - 1]
-给你由整数组成的山脉数组 arr ，返回任何满足 arr[0] < arr[1] < ... arr[i - 1] < arr[i] > arr[i + 1] > ... > arr[arr.length - 1] 的下标 i 。
+/*
+力扣序号17. 电话号码的字母组合
+https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
 
 示例 1：
-输入：arr = [0,1,0]
-输出：1
+输入：digits = "23"
+输出：["ad","ae","af","bd","be","bf","cd","ce","cf"]
 
 示例 2：
-输入：arr = [0,2,1,0]
-输出：1
+输入：digits = ""
+输出：[]
 
 示例 3：
-输入：arr = [0,10,5,2]
-输出：1
-
-示例 4：
-输入：arr = [3,4,5,1]
-输出：2
-
-示例 5：
-输入：arr = [24,69,100,99,79,78,67,36,26,19]
-输出：2
-
-提示：
-3 <= arr.length <= 104
-0 <= arr[i] <= 106
-题目数据保证 arr 是一个山脉数组
+输入：digits = "2"
+输出：["a","b","c"]
  
-进阶：很容易想到时间复杂度 O(n) 的解决方案，你可以设计一个 O(log(n)) 的解决方案吗？
- */
-
+提示：
+0 <= digits.length <= 4
+digits[i] 是范围 ['2', '9'] 的一个数字。
+*/
 /**
- * @param {number[]} arr
- * @return {number}
+ * @param {string} digits
+ * @return {string[]}
  */
-var peakIndexInMountainArray = function(arr) {
-    let left = 0;
-    let right = arr.length - 1;
-    while(left < right) {
-        let mid = (left + right) >> 1;
-        if (arr[mid] > arr[mid + 1]) {
-            right = mid;
-        } else {
-            left = mid + 1;
-        }
+ var letterCombinations = function(digits) {
+    if (!digits) {
+        return []
     }
-    return left;
+    let map = {
+        2: ['a', 'b', 'c'],
+        3: ['d', 'e', 'f'],
+        4: ['g', 'h', 'i'],
+        5: ['j', 'k', 'l'],
+        6: ['m', 'n', 'o'],
+        7: ['p', 'q', 'r', 's'],
+        8: ['t', 'u', 'v'],
+        9: ['w', 'x', 'y', 'z'],
+    }
+    let arr = []
+    for (let i = 0; i < digits.length; i++) {
+        arr.push(map[digits[i]])
+    }
+    let count = 0
+    while (arr.length > 1) {
+        let tmp = []
+        for (let i = 0; i < arr[0].length; i++) {
+            for (let j = 0; j < arr[1].length; j++) {
+                tmp.push(arr[0][i] + arr[1][j])
+                count++
+            }
+        }
+        arr.splice(0, 2, tmp)
+    }
+    console.log(count)
+    return arr[0]
 };
 
-console.log(peakIndexInMountainArray([24,69,100,99,79,78,67,36,26,19]))
+console.log(JSON.stringify(letterCombinations('7799')))

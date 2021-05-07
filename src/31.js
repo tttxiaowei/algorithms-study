@@ -1,57 +1,62 @@
-/*
-力扣序号11. 盛最多水的容器
-https://leetcode-cn.com/problems/container-with-most-water/
-给你 n 个非负整数 a1，a2，...，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0) 。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
 
-说明：你不能倾斜容器。
+/*
+力扣序号31. 下一个排列
+https://leetcode-cn.com/problems/next-permutation/
+实现获取 下一个排列 的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+必须 原地 修改，只允许使用额外常数空间。
 
 示例 1：
-输入：[1,8,6,2,5,4,8,3,7]
-输出：49 
+输入：nums = [1,2,3]
+输出：[1,3,2]
 
 示例 2：
-输入：height = [1,1]
-输出：1
+输入：nums = [3,2,1]
+输出：[1,2,3]
 
 示例 3：
-输入：height = [4,3,2,1,4]
-输出：16
+输入：nums = [1,1,5]
+输出：[1,5,1]
 
 示例 4：
-输入：height = [1,2,1]
-输出：2
+输入：nums = [1]
+输出：[1]
 
 提示：
-n = height.length
-2 <= n <= 3 * 104
-0 <= height[i] <= 3 * 104
+1 <= nums.length <= 100
+0 <= nums[i] <= 100
 */
+
 /**
- * @param {number[]} height
- * @return {number}
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
  */
-var maxArea = function(height) {
-    let max = 0;
-    let start = 0
-    let end = height.length - 1
-    while (start < end) {
-        const area = (height[start] > height[end] ? height[end] : height[start]) * (end - start)
-        max = max > area ? max : area
-        if (height[start] > height[end]) {
-            let lasVal = height[end]
-            end--
-            while (lasVal >= height[end] && start < end) {
-                end--
-            }
-        } else {
-            let lasVal = height[start]
-            start++
-            while (lasVal >= height[start] && start < end) {
-                start++
-            }
+var nextPermutation = function(nums) {
+    let index = nums.length - 1
+    while (index) {
+        if (nums[index] > nums[index - 1]) { // 找到后一位（index）大于前一位（index-1）的位置
+            let neighbor, neighborIndex
+            nums.slice(index).forEach((item, i) => { // 找到index到末尾中，大于且最接近index-1的值
+                if (nums[index - 1] < item) {
+                    if (neighbor == null || item < neighbor) {
+                        neighbor = item
+                        neighborIndex = i
+                    } 
+                }
+            });
+            ([nums[index - 1], nums[index + neighborIndex]] = [nums[index + neighborIndex], nums[index - 1]]) // 让index-1的变大
+            nums.splice(index, nums.length, ...nums.slice(index).sort((a, b) => (a - b))) // 对index到末尾进行排序
+            break
         }
+        index--
     }
-    return max
+    if (!index) {
+        nums.splice(0, nums.length, ...nums.sort((a, b) => (a - b)))
+    }
+    return nums
 };
 
-console.log(maxArea([4,3,2,1,4]))
+console.log(JSON.stringify(nextPermutation([5,4,7,5,3,2])))
+console.log(JSON.stringify(nextPermutation([1,2,3])))
+console.log(JSON.stringify(nextPermutation([1,3,2])))
+console.log(JSON.stringify(nextPermutation([2,3,1])))

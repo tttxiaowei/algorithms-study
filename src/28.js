@@ -1,37 +1,40 @@
-/*
-剑指 Offer 10- II. 青蛙跳台阶问题
-https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/
-一只青蛙一次可以跳上1级台阶，也可以跳上2级台阶。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
+/**
+力扣序号28
+https://leetcode-cn.com/problems/implement-strstr/
 
-答案需要取模 1e9+7（1000000007），如计算初始结果为：1000000008，请返回 1。
+ 给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  -1。
 
-示例 1：
-输入：n = 2
-输出：2
+示例 1:
+输入: haystack = "hello", needle = "ll"
+输出: 2
 
-示例 2：
-输入：n = 7
-输出：21
-
-示例 3：
-输入：n = 0
-输出：1
-
-提示：
-0 <= n <= 100
-*/
+示例 2:
+输入: haystack = "aaaaa", needle = "bba"
+输出: -1
+ */
 
 /**
- * @param {number} n
+ * @param {string} haystack
+ * @param {string} needle
  * @return {number}
  */
-var numWays = function(n) {
-    let a = b = c = 1
-    for (let i = 1; i < n; i++) {
-        c = (a + b) % 1000000007;
-        ([a, b] = [b, c])
+var strStr = function(haystack, needle) {
+    if (!needle) {
+        return 0;
+    } 
+    let len1 = haystack.length;
+    let lastIndex = needle.length - 1;
+    for (let i = j = 0; i < len1; i++) {
+        while (haystack[i + j] === needle[j]) {
+            if (j === lastIndex) {
+                return i;
+            } else {
+                j++;
+            }
+        }
+        j = 0;
     }
-    return c
+    return -1;
 };
 
-console.log(numWays(78))
+console.log(strStr('hello', 'lo'));

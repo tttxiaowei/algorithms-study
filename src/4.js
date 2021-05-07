@@ -1,89 +1,107 @@
-/**
-力扣序号14
-https://leetcode-cn.com/problems/longest-common-prefix/
-
- 编写一个函数来查找字符串数组中的最长公共前缀。
-如果不存在公共前缀，返回空字符串 ""。
-
-示例 1：
-输入：strs = ["flower","flow","flight"]
-输出："fl"
-
-示例 2：
-输入：strs = ["dog","racecar","car"]
-输出：""
-解释：输入不存在公共前缀。
-
-提示：
-0 <= strs.length <= 200
-0 <= strs[i].length <= 200
-strs[i] 仅由小写英文字母组成
- */
-
+/*
+力扣序号4
+https://leetcode-cn.com/problems/median-of-two-sorted-arrays/
+给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的 中位数 。
+*/
 
 /**
- * 纵向查找
- * @param {string[]} strs
- * @return {string}
+ * 普通做法，找到两个数组长度一半的地方，就是中位数 
+ * 时间复杂度O(m+n)
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number}
  */
-var longestCommonPrefix1 = function(strs) {
-    let commonPrefix = '';
-    let total = strs.length;
-    if (total) {
-        let len = strs[0].length;
-        for (let i = 0; i < len; i++) {
-            let j = 1;
-            for (; j < total; j++) {
-                if (strs[0][i] !== strs[j][i]) {
-                    break;
-                }
-            }
-            if (j === total) {
-                commonPrefix += strs[0][i];
-            } else {
-                break;
-            }
+var findMedianSortedArrays = function(nums1, nums2) {
+    let len1 = nums1.length;
+    let len2 = nums2.length;
+    let pos = (len1 + len2 + 2) >> 1;
+    // console.log(pos)
+    let i = j = 0;
+    let arr = [];
+    while (arr.length < pos) {
+        if (i >= len1) {
+            arr.push(nums2[j]);
+            j++;
+            continue;
         }
-    }
-    return commonPrefix;
-};
-
-
-
-/**
- * 横向查找
- * @param {string[]} strs
- * @return {string}
- */
-var longestCommonPrefix2 = function(strs) {
-    function getLongPrefix(str1, str2) {
-        let len = str1.length;
-        let i = 0;
-        for (; i < len; i++) {
-            if (str1[i] !== str2[i]) {
-                break;
-            }
+        if (j >= len2) {
+            arr.push(nums1[i]);
+            i++;
+            continue;
         }
-        return str1.slice(0, i);
-    }
-
-    if (strs == null) {
-        return '';
-    }
-    let commonPrefix = strs[0] || '';
-    let total = strs.length;
-    for (let i = 1; i < total; i++) {
-        let prefix = getLongPrefix(commonPrefix, strs[i]);
-        if (prefix.length) {
-            if (prefix.length < commonPrefix.length) {
-                commonPrefix = prefix;
-            }
+        if (nums1[i] <= nums2[j]) {
+            arr.push(nums1[i]);
+            i++;
         } else {
-            commonPrefix = '';
-            break
+            arr.push(nums2[j]);
+            j++;
         }
     }
-    return commonPrefix;
+    // console.log(arr);
+    if ((len1 + len2 ) % 2) { // 奇数
+        return arr[pos - 1];
+    } else {
+        return (arr[pos - 1] + arr[pos - 2]) / 2;
+    }
 };
 
-console.log(longestCommonPrefix2(["flower","flow","flight"]))
+
+/**
+ * 普通做法，找到两个数组长度一半的地方，就是中位数 
+ * 时间复杂度O(m+n)
+ * @param {number[]} nums1
+ * @param {number[]} nums2
+ * @return {number}
+ */
+var findMedianSortedArrays2 = function(nums1, nums2) {
+    let len1 = nums1.length;
+    let len2 = nums2.length;
+    let k = (len1 + len2 + 2) >> 1;
+    let l1 = 0;
+    let r1 = len1 - 1;
+    let l2 = 0;
+    let r2 = len2 - 1;
+    let rr1 = rr2 = -1;
+    if (!len1) {
+        rr2 = k - 1;
+    } else if (!len2) {
+        rr1 = k - 1;
+    } else {
+        while (k > 0) {
+            console.log(k, r1, r2);
+            let index = (k >> 1) - 1;
+            r1 = rr1 === -1 ? index : rr1 + index 
+            r2 = rr1 === -1 ? index : rr2 + index 
+            if (nums1[r1] < nums2[r2]) {
+                rr1 = r1
+            } else {
+                rr2 = r2
+            }
+            k -= (index + 1)
+        }
+    }
+    console.log('result:', rr1, rr2)
+    if ((len1 + len2 ) % 2) { // 奇数
+        return getMaxVal(nums1, rr1, nums2, rr2);
+    } else {
+        let max1 = max2 = 0;
+        max1 = getMaxVal(nums1, rr1, nums2, rr2);
+        if (max1 === nums1[rr1]) {
+            max2 = getMaxVal(nums1, rr1 - 1, nums2, rr2);
+        } else {
+            max2 = getMaxVal(nums1, rr1, nums2, rr2 - 1);
+        }
+        return (max1 + max2) / 2;
+    }
+
+    function getMaxVal(arr1, index1, arr2, index2) {
+        if (index1 < 0 || index1 >= arr1.length) {
+            return arr2[index2];
+        } else if (index2 < 0 || index2 >= arr2.length) {
+            return arr1[index1];
+        } else {
+            return Math.max(arr1[index1], arr2[index2]);
+        }
+    }
+}
+console.log(findMedianSortedArrays2([1], [1]))

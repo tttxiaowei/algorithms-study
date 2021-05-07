@@ -1,56 +1,89 @@
-/** 
-力扣序号153
-https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/
+/**
+力扣序号14
+https://leetcode-cn.com/problems/longest-common-prefix/
 
-假设按照升序排序的数组在预先未知的某个点上进行了旋转。例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] 。
-请找出其中最小的元素。
+ 编写一个函数来查找字符串数组中的最长公共前缀。
+如果不存在公共前缀，返回空字符串 ""。
 
 示例 1：
-输入：nums = [3,4,5,1,2]
-输出：1
+输入：strs = ["flower","flow","flight"]
+输出："fl"
 
 示例 2：
-输入：nums = [4,5,6,7,0,1,2]
-输出：0
+输入：strs = ["dog","racecar","car"]
+输出：""
+解释：输入不存在公共前缀。
 
-示例 3：
-输入：nums = [1]
-输出：1
- 
 提示：
-1 <= nums.length <= 5000
--5000 <= nums[i] <= 5000
-nums 中的所有整数都是 唯一 的
-nums 原来是一个升序排序的数组，但在预先未知的某个点上进行了旋转
-
-*/
+0 <= strs.length <= 200
+0 <= strs[i].length <= 200
+strs[i] 仅由小写英文字母组成
+ */
 
 
 /**
- * @param {number[]} nums
- * @return {number}
+ * 纵向查找
+ * @param {string[]} strs
+ * @return {string}
  */
-var findMin = function(nums) {
-    let len = nums.length;
-    let left = 0;
-    let right = len - 1;
-    if (!right) {
-        return nums[0];
-    }
-    while(left < right) {
-        let mid = (left + right + 1) >> 1;
-        if (nums[left] > nums[right]) {
-            if (nums[mid] < nums[mid -1]) {
-                return nums[mid];
-            } else if (nums[right] < nums[mid]) {
-                left = mid;
-            } else {
-                right = mid;
+var longestCommonPrefix1 = function(strs) {
+    let commonPrefix = '';
+    let total = strs.length;
+    if (total) {
+        let len = strs[0].length;
+        for (let i = 0; i < len; i++) {
+            let j = 1;
+            for (; j < total; j++) {
+                if (strs[0][i] !== strs[j][i]) {
+                    break;
+                }
             }
-        } else {
-            return nums[left];
+            if (j === total) {
+                commonPrefix += strs[0][i];
+            } else {
+                break;
+            }
         }
     }
+    return commonPrefix;
 };
 
-console.log(findMin([2,3,1]));
+
+
+/**
+ * 横向查找
+ * @param {string[]} strs
+ * @return {string}
+ */
+var longestCommonPrefix2 = function(strs) {
+    function getLongPrefix(str1, str2) {
+        let len = str1.length;
+        let i = 0;
+        for (; i < len; i++) {
+            if (str1[i] !== str2[i]) {
+                break;
+            }
+        }
+        return str1.slice(0, i);
+    }
+
+    if (strs == null) {
+        return '';
+    }
+    let commonPrefix = strs[0] || '';
+    let total = strs.length;
+    for (let i = 1; i < total; i++) {
+        let prefix = getLongPrefix(commonPrefix, strs[i]);
+        if (prefix.length) {
+            if (prefix.length < commonPrefix.length) {
+                commonPrefix = prefix;
+            }
+        } else {
+            commonPrefix = '';
+            break
+        }
+    }
+    return commonPrefix;
+};
+
+console.log(longestCommonPrefix2(["flower","flow","flight"]))

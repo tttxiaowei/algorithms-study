@@ -1,41 +1,53 @@
-/*
-力扣序号69
-https://leetcode-cn.com/problems/sqrtx/
-x 的平方根
-实现 int sqrt(int x) 函数。
-计算并返回 x 的平方根，其中 x 是非负整数。
-由于返回类型是整数，结果只保留整数的部分，小数部分将被舍去。
-
-示例 1:
-输入: 4
-输出: 2
-
-示例 2:
-输入: 8
-输出: 2
-
-说明: 8 的平方根是 2.82842..., 
-     由于返回类型是整数，小数部分将被舍去。
-
-*/
 /**
- * @param {number} x
- * @return {number}
+力扣序号20
+https://leetcode-cn.com/problems/valid-parentheses/
+
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+
+有效字符串需满足：
+左括号必须用相同类型的右括号闭合。
+左括号必须以正确的顺序闭合。
+ 
+
+示例 1：
+输入：s = "()"
+输出：true
+
+示例 2：
+输入：s = "()[]{}"
+输出：true
+
+示例 3：
+输入：s = "(]"
+输出：false
+
+示例 4：
+输入：s = "([)]"
+输出：false
  */
-var mySqrt = function(x) {
-    let l = 0
-    let r = x
-    while(l <= r) {
-        let mid = (l + r) >> 1
-        let tmp = mid * mid
-        if (tmp === x) {
-            return mid;
-        } else if (tmp > x) {
-            r = mid - 1
-        } else {
-            l = mid + 1
+
+ 
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+var isValid = function(s) {
+    let openList = ['(', '[', '{'];
+    let openMap = {
+        '(': ')',
+        '[': ']',
+        '{': '}',
+    };
+    let arr = [];
+    let len = s.length;
+    for (let i = 0; i < len; i++) {
+        if (openList.includes(s[i])) {
+            arr.push(s[i]);
+        } else if (openMap[arr.pop()] !== s[i]) {
+            return false;
         }
     }
-    return r
+    return !arr.length;
 };
-console.log(mySqrt(4))
+
+console.log(isValid("[()]"));

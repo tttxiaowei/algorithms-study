@@ -1,59 +1,53 @@
-/** 
-力扣序号81
-https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii/
+/**
+力扣序号13
+https://leetcode-cn.com/problems/roman-to-integer/
 
-假设按照升序排序的数组在预先未知的某个点上进行了旋转。
-( 例如，数组 [0,0,1,2,2,5,6] 可能变为 [2,5,6,0,0,1,2] )。
-编写一个函数来判断给定的目标值是否存在于数组中。若存在返回 true，否则返回 false。
+罗马数字包含以下七种字符: I， V， X， L，C，D 和 M。
 
-示例 1:
-输入: nums = [2,5,6,0,0,1,2], target = 0
-输出: true
+字符          数值
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+例如， 罗马数字 2 写做 II ，即为两个并列的 1。12 写做 XII ，即为 X + II 。 27 写做  XXVII, 即为 XX + V + II 。
 
-示例 2:
-输入: nums = [2,5,6,0,0,1,2], target = 3
-输出: false
+通常情况下，罗马数字中小的数字在大的数字的右边。但也存在特例，例如 4 不写做 IIII，而是 IV。数字 1 在数字 5 的左边，所表示的数等于大数 5 减小数 1 得到的数值 4 。同样地，数字 9 表示为 IX。这个特殊的规则只适用于以下六种情况：
+
+I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
+X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。 
+C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
+给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。
+
 */
 
-
 /**
- * @param {number[]} nums
- * @param {number} target
- * @return {boolean}
+ * @param {string} s
+ * @return {number}
  */
-var search = function(nums, target) {
-    let len = nums.length;
-    let left = 0;
-    let right = len - 1;
-    while (left < right && nums[left] === nums[right]) { // 和12.js中元素无重复解法的区别，先去掉末尾重复的
-        right--;
+var romanToInt = function(s) {
+    const romanMap = {
+        I: 1,
+        V: 5,
+        X: 10,
+        L: 50,
+        C: 100,
+        D: 500,
+        M: 1000
     }
-    while(left <= right) {
-        if (nums[left] === target) {
-            return true;
-        }
-        if (nums[right] === target) {
-            return true;
-        }
-        let mid = (left + right) >> 1;
-        if (nums[mid] === target) {
-            return true;
-        }
-        if (nums[mid] < target) {
-            if (nums[right] > nums[mid] && nums[right] < target) {
-                right = mid - 1;
-            } else {
-               left = mid + 1;
-            }
+    let res = 0;
+    let len = s.length;
+    for(let i = 0; i < len; i++) {
+        if (romanMap[s[i]] < romanMap[s[i + 1]]) {
+            res += romanMap[s[i + 1]] - romanMap[s[i]];
+            i++;
         } else {
-            if (nums[right] < nums[mid] && nums[right] > target) {
-                left = mid + 1;
-            } else {
-                right = mid - 1;
-            }
+            res += romanMap[s[i]];
         }
     }
-    return false;
+    return res;
 };
 
-console.log(search([1], 1));
+console.log(romanToInt("MCMXCIV"));

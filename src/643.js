@@ -1,5 +1,5 @@
 /*
-力扣序号643
+力扣序号643. 子数组最大平均数 I
 https://leetcode-cn.com/problems/maximum-average-subarray-i/
 
 给定 n 个整数，找出平均数最大且长度为 k 的连续子数组，并输出该最大平均数。
