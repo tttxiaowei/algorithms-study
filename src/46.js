@@ -26,25 +26,37 @@ nums 中的所有整数 互不相同
  * @return {number[][]}
  */
 var permute = function(nums) {
-    let len = nums.length
-    let ans = []
-
-    function per(arr) {
-        if (arr.length <= 1) {
-            return [[...arr]]
-        }
-        let res = []
-        for (let i = 0; i < arr.length; i++) {
-            per(arr.slice(0, i).concat(arr.slice(i + 1))).forEach(item => {
-                item.unshift(arr[i])
-                res.push(item)
-            })
-        }
-        return res
+    if (nums.length <= 1) {
+        return [nums]
     }
+    let res = []
+    for (let i = 0; i < nums.length; i++) {
+        permute(nums.slice(0, i).concat(nums.slice(i + 1))).forEach(item => {
+            item.push(nums[i])
+            res.push(item)
+        })
+    }
+    return res
+};
 
-    per(nums)
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+ var permute1 = function(nums) {
+    let ans = []
+    function dfs(arr, path) {
+        let len = arr.length
+        for (let i = 0; i < len; i++) {
+            if (len > 1) {
+                dfs(arr.slice(0, i).concat(arr.slice(i + 1)), [...path, arr[i]])
+            } else {
+                ans.push([...path, arr[i]])
+            }
+        }
+    }
+    dfs(nums, [])
     return ans
 };
 
-console.log(JSON.stringify(permute([1,2,3])))
+console.log(JSON.stringify(permute1([1,2,3])))
