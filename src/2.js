@@ -32,59 +32,59 @@ function ListNode(val, next) {
 }
 
 function generateList(list) {
-    let arr = list.map(item => new ListNode(item))
-    arr.forEach((item, index) => {
-        item.next = arr[index + 1] || null
-    })
-    return arr[0]
+    let last = null
+    for (let i = list.length - 1; i >= 0; i--) {
+        last = new ListNode(list[i], last)
+    }
+    return last
 }
-
 /**
  * @param {ListNode} l1
  * @param {ListNode} l2
  * @return {ListNode}
  */
 var addTwoNumbers = function(l1, l2) {
-    const list = []
+    let result = l1
     let plus = 0
+    let lastL1 = l1
     while(l1 && l2) {
         let val = l1.val + l2.val + plus
         plus = 0
-        if (val < 10) {
-            list.push(val)
-        } else {
+        if (val >= 10) {
             plus = 1
-            list.push(val - 10)
+            val -= 10
         }
+        l1.val = val
+        lastL1 = l1
         l1 = l1.next
         l2 = l2.next
+    }
+    if (l2) {
+        lastL1.next = l2
+        l1 = l2
     }
     while(l1) {
         let val = l1.val + plus
         plus = 0
-        if (val < 10) {
-            list.push(val)
-        } else {
+        if (val >= 10) {
             plus = 1
-            list.push(val - 10)
+            val -= 10
         }
+        l1.val = val
+        lastL1 = l1
         l1 = l1.next
     }
-    
-    while(l2) {
-        let val = l2.val + plus
-        plus = 0
-        if (val < 10) {
-            list.push(val)
-        } else {
-            plus = 1
-            list.push(val - 10)
-        }
-        l2 = l2.next
-    }
     if (plus) {
-        list.push(plus)
+        lastL1.next = new ListNode(1)
     }
-    return generateList(list)
+    return result
 }
-console.log(JSON.stringify(addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))))
+
+
+console.time()
+// for (let i = 0; i < 1000000; i++) {
+//     addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))
+// }
+// console.log(JSON.stringify(addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))))
+console.log(JSON.stringify(addTwoNumbers(generateList([2,4,9]), generateList([5,6,4,9]))))
+console.timeEnd()
