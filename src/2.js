@@ -44,11 +44,12 @@ function generateList(list) {
  * @return {ListNode}
  */
 var addTwoNumbers = function(l1, l2) {
-    let result = l1
+    let result = l1 // 将计算结果保留到l1上
     let plus = 0
     let lastL1 = l1
-    while(l1 && l2) {
-        let val = l1.val + l2.val + plus
+    let val
+    while(l1 && l2) { // 先计算l1,l2相同长度的部分
+        val = l1.val + l2.val + plus
         plus = 0
         if (val >= 10) {
             plus = 1
@@ -59,12 +60,12 @@ var addTwoNumbers = function(l1, l2) {
         l1 = l1.next
         l2 = l2.next
     }
-    if (l2) {
+    if (l2) { // 如果l1比l2短,将l1和l2多出来的元素连起来
         lastL1.next = l2
         l1 = l2
     }
-    while(l1) {
-        let val = l1.val + plus
+    while(l1 && plus) { // 如果l1还有元素并且还要进位. 就一直+1
+        val = l1.val + plus
         plus = 0
         if (val >= 10) {
             plus = 1
@@ -74,7 +75,7 @@ var addTwoNumbers = function(l1, l2) {
         lastL1 = l1
         l1 = l1.next
     }
-    if (plus) {
+    if (plus) { // 如果计算完之后还要进位,就添加一个新节点
         lastL1.next = new ListNode(1)
     }
     return result
@@ -82,9 +83,10 @@ var addTwoNumbers = function(l1, l2) {
 
 
 console.time()
-// for (let i = 0; i < 1000000; i++) {
-//     addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))
-// }
-// console.log(JSON.stringify(addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))))
+for (let i = 0; i < 10000000; i++) {
+    addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))
+    addTwoNumbers(generateList([2,4,9]), generateList([5,6,4,9]))
+}
+console.log(JSON.stringify(addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))))
 console.log(JSON.stringify(addTwoNumbers(generateList([2,4,9]), generateList([5,6,4,9]))))
 console.timeEnd()
