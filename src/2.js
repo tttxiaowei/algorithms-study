@@ -32,59 +32,61 @@ function ListNode(val, next) {
 }
 
 function generateList(list) {
-    let arr = list.map(item => new ListNode(item))
-    arr.forEach((item, index) => {
-        item.next = arr[index + 1] || null
-    })
-    return arr[0]
+    let last = null
+    for (let i = list.length - 1; i >= 0; i--) {
+        last = new ListNode(list[i], last)
+    }
+    return last
 }
-
 /**
  * @param {ListNode} l1
  * @param {ListNode} l2
  * @return {ListNode}
  */
 var addTwoNumbers = function(l1, l2) {
-    const list = []
+    let result = l1 // 将计算结果保留到l1上
     let plus = 0
-    while(l1 && l2) {
-        let val = l1.val + l2.val + plus
+    let lastL1 = l1
+    let val
+    while(l1 && l2) { // 先计算l1,l2相同长度的部分
+        val = l1.val + l2.val + plus
         plus = 0
-        if (val < 10) {
-            list.push(val)
-        } else {
+        if (val >= 10) {
             plus = 1
-            list.push(val - 10)
+            val -= 10
         }
+        l1.val = val
+        lastL1 = l1
         l1 = l1.next
         l2 = l2.next
     }
-    while(l1) {
-        let val = l1.val + plus
+    if (l2) { // 如果l1比l2短,将l1和l2多出来的元素连起来
+        lastL1.next = l2
+        l1 = l2
+    }
+    while(l1 && plus) { // 如果l1还有元素并且还要进位. 就一直+1
+        val = l1.val + plus
         plus = 0
-        if (val < 10) {
-            list.push(val)
-        } else {
+        if (val >= 10) {
             plus = 1
-            list.push(val - 10)
+            val -= 10
         }
+        l1.val = val
+        lastL1 = l1
         l1 = l1.next
     }
-    
-    while(l2) {
-        let val = l2.val + plus
-        plus = 0
-        if (val < 10) {
-            list.push(val)
-        } else {
-            plus = 1
-            list.push(val - 10)
-        }
-        l2 = l2.next
+    if (plus) { // 如果计算完之后还要进位,就添加一个新节点
+        lastL1.next = new ListNode(1)
     }
-    if (plus) {
-        list.push(plus)
-    }
-    return generateList(list)
+    return result
+}
+
+
+console.time()
+for (let i = 0; i < 10000000; i++) {
+    addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))
+    addTwoNumbers(generateList([2,4,9]), generateList([5,6,4,9]))
 }
 console.log(JSON.stringify(addTwoNumbers(generateList([9,9,9,9,9,9,9]), generateList([9,9,9,9]))))
+console.log(JSON.stringify(addTwoNumbers(generateList([2,4,9]), generateList([5,6,4,9]))))
+console.timeEnd()
