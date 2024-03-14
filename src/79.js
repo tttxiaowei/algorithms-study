@@ -26,29 +26,82 @@ board 和 word 仅由大小写英文字母组成
 进阶：你可以使用搜索剪枝的技术来优化解决方案，使其在 board 更大的情况下可以更快解决问题？
 */
 
-
 /**
  * @param {character[][]} board
  * @param {string} word
  * @return {boolean}
  */
 var exist = function(board, word) {
-    let m = board.length
-    let n = board[0].length
-    let len = word.length
     let existsMap = []
-    for (let i = 0; i < m; i++) {
+    let len = word.length
+    let x = board.length
+    let y = board[0].length 
+    for (let i = 0; i < x; i++) {
         existsMap[i] = []
     }
-    for (let i = 0; i < m; i++) {
-        for (let j = 0; j < n; j++) {
-            if (word[0] === board[i][j]) {
+    for (let i = 0; i < x; i++) {
+        for (let j = 0; j < y; j++) {
+            if (board[i][j] === word[0]) {
                 existsMap[i][j] = 1
                 if (find(i, j, 1)) {
                     return true
-                } else {
-                    existsMap[i][j] = 0
                 }
+            }
+        }
+    }
+
+
+    function find(i, j, k) {
+        if (k >= len) {
+            return true
+        }
+        let tmp = i - 1
+        if (i > 0 && !existsMap[tmp][j] && word[k] === board[tmp][j]) { // top
+            existsMap[tmp][j] = 1
+            if (find(tmp, j, k + 1)) {
+                return true
+            }
+        }
+        tmp = i + 1
+        if (tmp < x && !existsMap[tmp][j] && word[k] === board[tmp][j]) { // bottom
+            existsMap[tmp][j] = 1
+            if (find(tmp, j, k + 1)) {
+                return true
+            }
+        }
+        tmp = j - 1
+        if (j > 0 && !existsMap[i][tmp] && word[k] === board[i][tmp]) { // left
+            existsMap[i][tmp] = 1
+            if (find(i, tmp, k + 1)) {
+                return true
+            }
+        }
+        tmp = j + 1
+        if (tmp < y && !existsMap[i][tmp] && word[k] === board[i][tmp]) { // right
+            existsMap[i][tmp] = 1
+            if (find(i, tmp, k + 1)) {
+                return true
+            }
+        }
+        existsMap[i][j] = 0
+        return false
+    }
+    return false
+};
+
+/**
+ * @param {character[][]} board
+ * @param {string} word
+ * @return {boolean}
+ */
+var exist2 = function(board, word) {
+    let len = word.length
+    let x = board.length
+    let y = board[0].length 
+    for (let i = 0; i < x; i++) {
+        for (let j = 0; j < y; j++) {
+            if (find(i, j, 0)) {
+                return true
             }
         }
     }
@@ -57,75 +110,41 @@ var exist = function(board, word) {
         if (k === len) {
             return true
         }
-        let tmp = i - 1
-        let nextK = k + 1
-        if (i > 0 && word[k] === board[tmp][j]) { // top
-            if (!existsMap[tmp][j]) {
-                existsMap[tmp][j] = 1
-                if(find(tmp, j, nextK)) {
-                    return true
-                } else {
-                    existsMap[tmp][j] = 0
-                }
-            }
+        if (i < 0 || j < 0|| i >= x || j >= y || !board[i][j]) {
+            return false
         }
-        tmp = j + 1
-        if (j < n - 1 && word[k] === board[i][tmp]) { // right
-            if (!existsMap[i][tmp]) {
-                existsMap[i][tmp] = 1
-                if(find(i, tmp, nextK)) {
-                    return true
-                } else {
-                    existsMap[i][tmp] = 0
-                }
-            }
+        if (word[k] !== board[i][j]) {
+            return false
         }
-        tmp = i + 1
-        if (i < m - 1 && word[k] === board[tmp][j]) { // bottom
-            if (!existsMap[tmp][j]) {
-                existsMap[tmp][j] = 1
-                if(find(tmp, j, nextK)) {
-                    return true
-                } else {
-                    existsMap[tmp][j] = 0
-                }
-            }
+        board[i][j] = ''
+        if (find(i-1, j, k + 1) || find(i+1, j, k + 1) || find(i, j -1, k + 1) || find(i, j +1, k + 1)) {
+            return true
         }
-        tmp = j - 1
-        if (j > 0 && word[k] === board[i][tmp]) { // left
-            if (!existsMap[i][tmp]) {
-                existsMap[i][tmp] = 1
-                if(find(i, tmp, nextK)) {
-                    return true
-                } else {
-                    existsMap[i][tmp] = 0
-                }
-            }
-        }
+        board[i][j] = word[k]
         return false
     }
     return false
 };
+
 console.time()
 for (let i = 0; i < 10000; i++) {
-    exist( [["C","A","A"],["A","A","A"],["B","C","D"]], "AAB")
-    exist( [["A","B","E"],["B","C","D"]], "ABCDEB")
-    exist( [["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")
-    exist( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCCED")
-    exist( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "SEE")
-    exist([["a","b"]], "ba")
-    exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCESEEEFS")
-    exist( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCB")
-    exist( [["a","a","a","a"],["a","a","a","a"],["a","a","a","a"]], "aaaaaaaaaaaaa")
+    exist2( [["C","A","A"],["A","A","A"],["B","C","D"]], "AAB")
+    exist2( [["A","B","E"],["B","C","D"]], "ABCDEB")
+    exist2( [["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")
+    exist2( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCCED")
+    exist2( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "SEE")
+    exist2([["a","b"]], "ba")
+    exist2([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCESEEEFS")
+    exist2( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCB")
+    exist2( [["a","a","a","a"],["a","a","a","a"],["a","a","a","a"]], "aaaaaaaaaaaaa")
 }
-console.log(JSON.stringify(exist( [["C","A","A"],["A","A","A"],["B","C","D"]], "AAB")))
-console.log(JSON.stringify(exist( [["A","B","E"],["B","C","D"]], "ABCDEB")))
-console.log(JSON.stringify(exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")))
-console.log(JSON.stringify(exist( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCCED")))
-console.log(JSON.stringify(exist( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "SEE")))
-console.log(JSON.stringify(exist([["a","b"]], "ba")))
-console.log(JSON.stringify(exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCESEEEFS")))
-console.log(JSON.stringify(exist( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCB")))
-console.log(JSON.stringify(exist( [["a","a","a","a"],["a","a","a","a"],["a","a","a","a"]], "aaaaaaaaaaaaa")))
-
 console.timeEnd()
+console.log(JSON.stringify(exist2( [["C","A","A"],["A","A","A"],["B","C","D"]], "AAB")))
+console.log(JSON.stringify(exist2( [["A","B","E"],["B","C","D"]], "ABCDEB")))
+console.log(JSON.stringify(exist2([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")))
+console.log(JSON.stringify(exist2( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCCED")))
+console.log(JSON.stringify(exist2( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "SEE")))
+console.log(JSON.stringify(exist2([["a","b"]], "ba")))
+console.log(JSON.stringify(exist2([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCESEEEFS")))
+console.log(JSON.stringify(exist2( [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCB")))
+console.log(JSON.stringify(exist2( [["a","a","a","a"],["a","a","a","a"],["a","a","a","a"]], "aaaaaaaaaaaaa")))
